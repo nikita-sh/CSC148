@@ -1,0 +1,287 @@
+"""
+More practice building classes.
+"""
+
+from typing import Any
+
+
+class GradeEntry:
+    """
+    Abstract class for keeping track of grades.
+
+    ===Attributes===
+    course_id: course identifier
+    weight: course weight, 0.5 for half, 1.0 for full
+    """
+    course_id: str
+    weight: float
+
+    def __init__(self, course_id: str, weight: float, grade: Any) -> None:
+        """
+        Initializes new grade entry
+        """
+        self.course_id, self.weight, self.grade = course_id, weight, grade
+
+    def __eq__(self, other):
+        """
+        Returns whether a GradeEntry self is equal to other
+        """
+        return (type(self) == type(other) and self.course_id == other.course_id
+                and self.weight == other.weight and self.grade == other.grade)
+
+    def __str__(self):
+        """
+        return a string representation of a GradeEntry
+        """
+        return "({}: {}, {})".format(self.course_id, self.grade, self.weight)
+
+    def get_gpa(self):
+        """
+        Gets GPA based on grade.
+        """
+        raise NotImplementedError("Need a subclass.")
+
+
+class NumericGradeEntry(GradeEntry):
+    """
+    Numeric grade entry system.
+
+    ===Attributes===
+    grade: grade in this course
+    """
+    grade: int
+
+    def get_gpa(self) -> float:
+        """
+        Gets GPA based on grade.
+        """
+        if self.grade >= 85:
+            return 4.0
+        elif self.grade >= 80:
+            return 3.7
+        elif self.grade >= 77:
+            return 3.3
+        elif self.grade >= 73:
+            return 3.0
+        elif self.grade >= 70:
+            return 2.7
+        elif self.grade >= 67:
+            return 2.3
+        elif self.grade >= 63:
+            return 2.0
+        elif self.grade >= 60:
+            return 1.7
+        elif self.grade >= 57:
+            return 1.3
+        elif self.grade >= 53:
+            return 1.0
+        elif self.grade >= 50:
+            return 0.7
+        else:
+            return 0.0
+
+
+class LetterGradeEntry(GradeEntry):
+    """
+    Letter grade entry system.
+
+    ===Attributes===
+    grade: letter grade earned in course
+    """
+    grade: str
+
+    # Letter grades and their corresponding point values
+    grades_gpa = {"A+": 4.0, "A": 4.0, "A-": 3.7, "B+": 3.3, "B": 3.0,
+                  "B-": 2.7, "C+": 2.3, "C": 2.0, "C-": 1.7, "D+": 1.3,
+                  "D": 1.0, "D-": 0.7, "F": 0.0}
+
+    def get_gpa(self) -> float:
+        """
+        Gets GPA based on grade.
+        """
+        for i in self.grades_gpa:
+            if i == self.grade:
+                return self.grades_gpa[i]
+
+
+class Roster:
+    """
+    Class for Roster of items. Not meant for instantiating objects, keeps track
+    of common attributes
+
+    ===Attributes===
+    roster: roster that will hold the objects
+    """
+    roster: dict
+
+    def __init__(self):
+        """
+        initializes a new roster
+        """
+        self.roster = {}
+
+    def display(self):
+        """
+        displays the objects in the roster currently
+        """
+        raise NotImplementedError('Subclass needed')
+
+
+class RunnerRoster(Roster):
+    """
+    A roster for a 5k race
+
+     ===Attributes===
+    roster: roster that will hold the objects
+    """
+    def __init__(self):
+        """
+        initializes a new roster
+        """
+        pass
+
+    def add(self):
+        """
+        adds new object to the roster
+        """
+        pass
+
+    def remove(self):
+        """
+        removes an object from the roster
+        """
+        pass
+
+    def display(self):
+        """
+        displays the objects in the roster currently
+        """
+        pass
+
+
+class PatientRoster(Roster):
+    """
+    Patient roster. Subclass of roster, overrides add, remove and display.
+
+     ===Attributes===
+    roster: roster that will hold the objects
+    """
+    def __init__(self):
+        """
+        initializes a new roster
+        """
+        pass
+
+    def add(self):
+        """
+        adds new object to the roster
+        """
+        pass
+
+    def remove(self):
+        """
+        removes an object from the roster
+        """
+        pass
+
+    def display(self):
+        """
+        displays the objects in the roster currently
+        """
+        pass
+
+
+class ClassRoster(Roster):
+    """
+    Class roster. Subclass of roster, overrides add, remove and display.
+
+     ===Attributes===
+    roster: roster that will hold the objects
+    """
+    def __init__(self):
+        """
+        initializes a new roster
+        """
+        pass
+
+    def add(self):
+        """
+        adds new object to the roster
+        """
+        pass
+
+    def remove(self):
+        """
+        removes an object from the roster
+        """
+        pass
+
+    def display(self):
+        """
+        displays the objects in the roster currently
+        """
+        pass
+
+
+class FlightRoster(Roster):
+    """
+    Flight Roster. Subclass of roster, overrides add, remove and display.
+
+     ===Attributes===
+    roster: roster that will hold the objects
+    """
+    def __init__(self):
+        """
+        initializes a new roster
+        """
+        pass
+
+    def add(self):
+        """
+        adds new object to the roster
+        """
+        pass
+
+    def remove(self):
+        """
+        removes an object from the roster
+        """
+        pass
+
+    def display(self):
+        """
+        displays the objects in the roster currently
+        """
+        pass
+
+
+class InventoryRoster(Roster):
+    """
+    Patient roster. Subclass of roster, overrides add, remove and display.
+
+     ===Attributes===
+    roster: roster that will hold the objects
+    """
+    def __init__(self):
+        """
+        initializes a new roster
+        """
+        pass
+
+    def add(self):
+        """
+        adds new object to the roster
+        """
+        pass
+
+    def remove(self):
+        """
+        removes an object from the roster
+        """
+        pass
+
+    def display(self):
+        """
+        displays the objects in the roster currently
+        """
+        pass
