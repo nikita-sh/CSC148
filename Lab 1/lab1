@@ -1,0 +1,573 @@
+"""
+Practice Building Classes
+"""
+
+
+class RaceRegistry:
+    """
+    Registry for a 5k Race, runners provide email and speed category
+
+    ===Attributes===
+    email: email of a specific runner
+    speed: estimated or previous 5k finish time, rounded down to nearest minute
+    """
+    email: str
+    speed: float
+
+    registry = []
+
+    def __init__(self, email: str, speed: float)->None:
+        """
+        creates an entry for a runner, speed categories are numbered 1 to 4 from
+        fastest to slowest
+
+        >>> r0 = RaceRegistry('123@fake.com', 35)
+        >>> r0.email
+        '123@fake.com'
+        >>> r0.speed
+        3
+        """
+        self.email = email
+        if int(speed) < 20:
+            self.speed = 1
+        elif int(speed) < 30:
+            self.speed = 2
+        elif int(speed) < 40:
+            self.speed = 3
+        else:
+            self.speed = 4
+        self.registry.append(self)
+
+    def __eq__(self, other) -> bool:
+        """
+        One runner is the same as another if and only if their speed category
+        and email are the same
+
+        >>> r1 = RaceRegistry('abc@fake.com', 25)
+        >>> r2 = RaceRegistry('def@fake.com', 30)
+        >>> r3 = RaceRegistry('abc@fake.com', 25)
+        >>> r1 == r2
+        False
+        >>> r1 == r3
+        True
+        """
+        return (type(self) == type(other) and self.email == other.email
+                and self.speed == other.speed)
+
+    def __str__(self) -> str:
+        """
+        creates a string representation of a runner, outputs email and speed
+        category
+
+        >>> r4 = RaceRegistry('xyz@fake.com', 37)
+        >>> print(r4)
+        (xyz@fake.com, 3)
+        """
+        return '({}, {})'.format(self.email, self.speed)
+
+    def get_emails(self, speed: int) -> None:
+        """
+        retrieves all emails in a given speed category
+
+        >>> r5 = RaceRegistry('123@fake.com', 45)
+        >>> r6 = RaceRegistry('456@fake.com', 50)
+        >>> r5.get_emails(4)
+        123@fake.com
+        456@fake.com
+        """
+        for item in self.registry:
+            if item.speed == speed:
+                print(item.email)
+
+    def get_category(self, email: str)->int:
+        """
+        retrieves speed category of a runner given their email
+
+        >>> r7 = RaceRegistry('789@fake.com', 25)
+        >>> r7.get_category('789@fake.com')
+        2
+        """
+        for item in self.registry:
+            if item.email == email:
+                return item.speed
+
+
+class Registry:  # RIGHT WAY / WAY IT WAS DONE BY PROFS OR TA'S
+    """A registry of runners in a 5K race.  Each runner is identified by
+    their email address and is registered in a speed category.
+
+    === Attributes ===
+    @param dict groups: runners grouped by category
+    """
+
+    # The names of the speed CATEGORIES for a race.
+    CATEGORIES = ['<20', '<30', '<40', '>=40']
+
+    def __init__(self):
+        """ (Registry) -> NoneType
+
+        Initialize a new race registry with no runners entered.
+        """
+        self.groups = {}
+        for c in Registry.CATEGORIES:
+            self.groups[c] = []
+
+    def __eq__(self, other):
+        """
+        Return whether Registry self is equivalent to other.
+
+        @param Registry self: this Registry
+        @param object|Registry other: object to compare to self
+        @rtype: bool
+        """
+        return (type(self) == type(other) and
+                self.groups == other.groups)
+
+    def registered_in(self, e):
+        """
+        Return the category that the runner with email address e is
+        registered in, or the empty string if no one with that email
+        address is already registered.
+
+        @param Registry self: this Registry
+        @param str e: runner's email
+
+        >>> r = Registry()
+        >>> r.register('Diane', '<20')
+        >>> r.registered_in('Phantom')
+        ''
+        >>> r.registered_in('Diane')
+        '<20'
+        >>>
+        """
+        for c in Registry.CATEGORIES:
+            if e in self.groups[c]:
+                return c
+        return ""
+
+    def register(self, e, c):
+        """
+        Register a runner with email address e and category c.  If they had
+        previously registered, remove them from their old category and
+        register them in category c.  c must occur in CATEGORIES.
+
+        @param Registry self: this Registry
+        @param str e: runner's email
+        @param str c: runner's speed category
+        @rtype: None
+        """
+        old_category = self.registered_in(e)
+        if old_category:
+            self.groups[old_category].remove(e)
+        self.groups[c].append(e)
+
+    def category_roster(self, c):
+        """
+        Return a list of the email addresses of all the runners registered
+        in category c.  c must occur in CATEGORIES.
+
+        @param Registry self: this Registry
+        @param str c: speed category
+        @rtype: list[str]
+
+        >>> r = Registry()
+        >>> r.register('a', '<20')
+        >>> r.register('b', '<20')
+        >>> r.register('c', '<40')
+        >>> r.category_roster('<20')
+        ['a', 'b']
+        >>> r.category_roster('<30')
+        []
+        """
+        return self.groups[c]
+
+    def __str__(self):
+        """
+        Return a str describing this Registry, suitable for a user to read.
+
+        @param Registry self: this Registry
+        @rtype: str
+
+        >>> r = Registry()
+        >>> r.register("a", "<20")
+        >>> r.register("b", "<20")
+        >>> r.register("c", "<40")
+        >>> print(r)
+        Runners with speed category <20:
+            a
+            b
+        Runners with speed category <30:
+            None
+        Runners with speed category <40:
+            c
+        Runners with speed category >=40:
+            None
+        <BLANKLINE>
+        """
+        answer = ""
+        for (speed, runners) in sorted(self.groups.items()):
+            answer += 'Runners with speed category %s:\n' % speed
+            if runners:
+                for r in runners:
+                    answer += '    %s\n' % r
+                    # Remove the final newline character.
+                    # answer = answer[:-1]
+            else:
+                answer += "    None\n"
+        return answer
+
+
+class PatientRoster:
+    """
+    Creates a roster of patients for a doctors office. Patients have first and
+    last name, sex, and OHIP number
+
+    === Attributes ===
+    registry: dictionary with key being OHIP number pointing to rest of
+    information
+    pat_lim: limit on number of patients allowed
+    gen_lim: limit on difference between male and female patients
+    mcount: count on male patients
+    fcount: count on female patients
+    """
+    registry: dict
+    pat_lim: int
+    gen_lim: int
+    mcount = 0
+    fcount = 0
+
+    def __init__(self, pat_lim: int, gen_lim: int) -> None:
+        """
+        creates new registry with no patients, with a patient limit, and
+        gender difference rule
+
+        >>> p = PatientRoster(10, 5)
+        >>> p.registry
+        {}
+        >>> p.pat_lim
+        10
+        >>> p.gen_lim
+        5
+        """
+        self.registry = {}
+        self.pat_lim, self.gen_lim = pat_lim, gen_lim
+
+    def __str__(self) -> str:
+        """
+        creates a string representation of the registry
+
+        >>> p = PatientRoster(2, 5)
+        >>> p.register(123, 'fake', 'name', 'M')
+        >>> print(p)
+        {123: ['fake', 'name', 'M']}
+        """
+        return "{}".format(self.registry)
+
+    def __eq__(self, other: 'PatientRoster') -> bool:
+        """
+        checks if one patient registry is equal to another
+
+        >>> p = PatientRoster(2, 5)
+        >>> p1 = PatientRoster(10, 5)
+        >>> p2 = PatientRoster(2, 5)
+        >>> p.register(123, 'fake', 'name', 'M')
+        >>> p1.register(123, 'fake', 'name', 'M')
+        >>> p2.register(123, 'fake', 'name', 'M')
+        >>> p == p1
+        False
+        >>> p == p2
+        True
+        """
+        return (type(self) == type(other) and self.gen_lim == other.gen_lim and
+                self.pat_lim == other.pat_lim and
+                self.registry == other.registry)
+
+    def register(self, ohip: int, nfirst: str, nlast: str, sex: str) -> None:
+        """
+        registers a new patient if the registry is within the patient and
+        gender limits
+
+        >>> p = PatientRoster(2, 5)
+        >>> p.register(123, 'fake', 'name', 'M')
+        >>> p.registry
+        {123: ['fake', 'name', 'M']}
+        >>> p.register(456, 'fake1', 'name1', 'M')
+        >>> p.register(789, 'fake2', 'fake2', 'F')
+        Sorry, the registry has reached its patient limit.
+        """
+        if len(self.registry) >= self.pat_lim:
+            print("Sorry, the registry has reached its patient limit.")
+        else: #TODO - FIX THIS
+            if abs(self.mcount - self.fcount) >= self.gen_lim and \
+                    (sex == max(self.fcount, self.mcount)):
+                print("Sorry, the registry has reached its sex difference "
+                      "limit")
+            else:
+                inf = [nfirst, nlast, sex]
+                self.registry[ohip] = inf
+                if sex == 'M':
+                    self.mcount += 1
+                else:
+                    self.fcount += 1
+
+    def remove_patient(self, ohip: int) -> None:
+        """
+        removes a patient from the registry
+
+        >>> p = PatientRoster(2, 5)
+        >>> p.register(123, 'fake', 'name', 'M')
+        >>> p.remove_patient(123)
+        >>> p.registry
+        {}
+        """
+        self.registry.pop(ohip)
+
+
+class ClassList:
+    """
+    A list of students for a course, with a limit on how many students can be
+    enrolled at once. Each student has a student number tied to their name.
+
+    === Attributes ===
+    registry: dictionary of students and student numbers
+    lim: limit on how many students can be enrolled
+    code: course code
+    """
+    registry: dict
+    lim: int
+
+    def __init__(self, lim: int) -> None:
+        """
+        Creates registry for a course with no students in it
+
+        >>> c = ClassList(100)
+        >>> c.registry
+        {}
+        >>> c.lim
+        100
+        """
+        self.registry, self.lim = {}, lim
+
+    def __str__(self) -> str:
+        """
+        String representation of course registry
+
+        >>> c = ClassList(100)
+        >>> c.register(1003536480, 'Nikita Shumeiko')
+        >>> print(c)
+        {1003536480: 'Nikita Shumeiko'}
+        """
+        return "{}".format(self.registry)
+
+    def register(self, student_no: int, name: str) -> None:
+        """
+        Registers a new student to the course, provided the amount of students
+        is within the limit
+
+        >>> c = ClassList(2)
+        >>> c.register(1003536480, 'Nikita Shumeiko')
+        >>> c.register(1234567890, 'Fake Name')
+        >>> c.registry
+        {1003536480: 'Nikita Shumeiko', 1234567890: 'Fake Name'}
+        >>> c.register(123, 'abc')
+        Sorry, this course has reached its enrollment limit.
+        """
+        if len(self.registry) >= self.lim:
+            print('Sorry, this course has reached its enrollment limit.')
+        else:
+            self.registry[student_no] = name
+
+    def remove(self, student_no: int) -> None:
+        """
+        Removes a student from the course
+
+        >>> c = ClassList(2)
+        >>> c.register(1003536480, 'Nikita Shumeiko')
+        >>> c.registry
+        {1003536480: 'Nikita Shumeiko'}
+        >>> c.remove(1003536480)
+        >>> c.registry
+        {}
+        """
+        self.registry.pop(student_no)
+
+    def change_limit(self, new_lim: int) -> None:
+        """
+        Changes enrollment limit for the course
+
+        >>> c = ClassList(2)
+        >>> c.lim
+        2
+        >>> c.change_limit(100)
+        >>> c.lim
+        100
+        """
+        self.lim = new_lim
+
+
+class Player:
+    """
+    A list of the last 100 scores a player has achieved in a game.
+
+    === Attributes ===
+    scores: last 100 scores the player has gotten, newest scores are last,
+    oldest scores are first
+    """
+    scores: list
+
+    def __init__(self) -> None:
+        """
+        Creates a new empty list of scores
+
+        >>> p = Player()
+        >>> p.scores
+        []
+        """
+        self.scores = []
+
+    def __str__(self) -> str:
+        """
+        A string representation of the list of scores
+
+        >>> p = Player()
+        >>> p.add_score(100)
+        >>> print(p)
+        [100]
+        """
+        return "{}".format(self.scores)
+
+    def add_score(self, score: int) -> None:
+        """
+        Adds a score the score list.
+
+        >>> p = Player()
+        >>> p.add_score(100)
+        >>> p.scores
+        [100]
+        """
+        if len(self.scores) == 100:
+            self.scores.pop(0)
+            self.scores.append(score)
+        else:
+            self.scores.append(score)
+
+    def get_avg(self) -> float:
+        """
+        retrieves the average score
+
+        >>> p = Player()
+        >>> p.add_score(2)
+        >>> p.add_score(6)
+        >>> p.get_avg()
+        4.0
+        """
+        count = 0
+        for i in self.scores:
+            count += i
+        return count / len(self.scores)
+
+    def get_top(self) -> int:
+        """
+        retrieves top score
+
+        >>> p = Player()
+        >>> p.add_score(2)
+        >>> p.add_score(6)
+        >>> p.get_top()
+        6
+        """
+        copy = self.scores
+        copy.sort(reverse=True)
+        return copy[0]
+
+
+class Inventory:
+    """
+    Models an inventory system. Items have an item number, price, and category.
+
+    === Attributes ===
+    inv: inventory of items
+    """
+    inv: dict
+
+    def __init__(self) -> None:
+        """
+        creates an inventory with no items.
+        """
+        self.inv = {}
+
+    def __str__(self) -> str:
+        """
+        String representation of an inventory.
+
+        >>> i = Inventory()
+        >>> i.add_item(123, 4.99, 'hardware')
+        >>> print(i)
+        {123: [4.99, 'hardware']}
+        """
+        return "{}".format(self.inv)
+
+    def compare_price(self, item_no: int, other_no: int, comparison: str):
+        """
+        compares the price of two items, based on the chosen comparison, i.e.
+        'greater', 'less'
+
+        >>> i = Inventory()
+        >>> i.add_item(123, 4.99, 'hardware')
+        >>> i.add_item(456, 10.99, 'toiletry')
+        >>> i.compare_price(123, 456, 'less')
+        123
+        """
+        if comparison == 'greater':
+            if self.inv[item_no][0] > self.inv[other_no][0]:
+                return item_no
+            elif self.inv[item_no][0] < self.inv[other_no][0]:
+                return other_no
+            else:
+                return "The items are of equal price."
+        else:
+            if self.inv[item_no][0] > self.inv[other_no][0]:
+                return other_no
+            elif self.inv[item_no][0] < self.inv[other_no][0]:
+                return item_no
+            else:
+                return "The items are of equal price."
+
+    def add_item(self, item_no: int, price: float, cat: str) -> None:
+        """
+        Adds an item to the inventory.
+
+        >>> i = Inventory()
+        >>> i.add_item(123, 4.99, 'hardware')
+        >>> print(i)
+        {123: [4.99, 'hardware']}
+        """
+        self.inv[item_no] = [price, cat]
+
+    def get_price(self, item_no: int) -> str:
+        """
+        Retrieves the price of an item based on its item number.
+
+        >>> i = Inventory()
+        >>> i.add_item(123, 4.99, 'hardware')
+        >>> i.get_price(123)
+        '$4.99'
+        """
+        for i in self.inv:
+            if i == item_no:
+                return "${}".format(self.inv[item_no][0])
+        return "The item was not found."
+
+    def discount(self, item_no: int, rate: int):
+        """
+        Discounts an item at a given percentage rate.
+
+        >>> i = Inventory()
+        >>> i.add_item(123, 4.99, 'hardware')
+        >>> i.discount(123, 10)
+        >>> i.get_price(123)
+        '$4.49'
+        """
+        rate /= 100
+        discount_rate = 1.00 - rate
+        self.inv[item_no][0] = round(self.inv[item_no][0]*discount_rate, 2)
